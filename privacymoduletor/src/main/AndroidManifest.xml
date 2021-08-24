@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="foundation.e.privacymodules.tor"
+    >
+    <!--
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+
+    <application>
+        <service
+        android:name="foundation.e.privacymodules.automatedactions.DoActionsService"
+        android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+
+        >
+        <intent-filter>
+            <action android:name="android.accessibilityservice.AccessibilityService" />
+        </intent-filter>
+        <meta-data
+            android:name="android.accessibilityservice"
+            android:resource="@xml/global_action_bar_service" />
+    </service>
+    </application>-->
+</manifest>

@@ -1,0 +1,5 @@
+include ':privacymodulesapi'
+include ':privacymoduletor'
+project(':privacymodulesapi').projectDir = new File('../PrivacyModulesApi/privacymodulesapi/')
+rootProject.name = "PrivacyModuleTor"
+include ':orbotservice'

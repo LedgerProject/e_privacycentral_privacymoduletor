@@ -1,0 +1,12 @@
+[submodule "orbotservice"]
+	path = orbotservice
+	url = git@gitlab.e.foundation:e/privacy-central/orbotservice.git
+[submodule "external/jtorctl"]
+	path = external/jtorctl
+	url = https://github.com/guardianproject/jtorctl
+[submodule "external/badvpn"]
+	path = external/badvpn
+	url = https://github.com/guardianproject/badvpn.git
+[submodule "external/jsocks"]
+	path = external/jsocks
+	url = https://github.com/guardianproject/jsocks.git

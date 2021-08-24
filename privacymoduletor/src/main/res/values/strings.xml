@@ -1,0 +1,25 @@
+<resources>
+    <string name="manual_action_enable_developer_settings_title">Developer Mode Disabled</string>
+    <string name="manual_action_enable_developer_settings_instructions">Enable developer options by clicking on your phone build number 7 (seven) times.</string>
+
+    <string name="manual_action_select_mock_location_app_title">Mock Location Disabled</string>
+    <string name="manual_action_select_mock_location_app_instructions">Select this app in the mock location app setting.</string>
+    <string name="manual_action_select_mock_location_app_instructions_under_m">Enable mock locations in settings.</string>
+
+    <string name="manual_action_switch_runtime_permission_title_format">Switch %s permission for %s</string>
+
+    <string name="manual_action_switch_runtime_permission_instructions_format">Toggle the permission %s in the settings of the app %s</string>
+
+    <string name="accessibility_overlay_button_stop">STOP</string>
+
+    <string name="accessibility_step_generic_back">Go back to the app.</string>
+
+    <string name="accessibility_step_select_mock_location_1">Find and click on %s</string>
+    <string name="accessibility_step_select_mock_location_2">Select the app %s</string>
+    <string name="accessibility_step_select_mock_location_3">@string/accessibility_step_generic_back</string>
+
+    <string name="accessibility_step_switch_runtime_permission_1">Open the %s screen</string>
+    <string name="accessibility_step_switch_runtime_permission_2">Switch the %s permission</string>
+    <string name="accessibility_step_switch_runtime_permission_3">@string/accessibility_step_generic_back</string>
+
+</resources>
