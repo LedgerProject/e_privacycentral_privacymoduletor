@@ -1,21 +1,37 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="foundation.e.privacymodules.tor"
+    android:installLocation="internalOnly"
     >
-    <!--
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
-
-    <application>
-        <service
-        android:name="foundation.e.privacymodules.automatedactions.DoActionsService"
-        android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-
+    <application
+        android:allowBackup="true"
         >
-        <intent-filter>
-            <action android:name="android.accessibilityservice.AccessibilityService" />
-        </intent-filter>
-        <meta-data
-            android:name="android.accessibilityservice"
-            android:resource="@xml/global_action_bar_service" />
-    </service>
-    </application>-->
+        <activity
+            android:name="org.torproject.android.service.util.DummyActivity"
+            android:allowTaskReparenting="true"
+            android:alwaysRetainTaskState="false"
+            android:clearTaskOnLaunch="true"
+            android:enabled="true"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:noHistory="true"
+            android:stateNotNeeded="true"
+            android:theme="@android:style/Theme.Translucent" />
+
+        <service
+            android:name="org.torproject.android.service.OrbotService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+    </application>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 </manifest>

@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
+
 
 android {
     compileSdkVersion 30
@@ -30,16 +32,50 @@ android {
 }
 
 dependencies {
-    implementation project(":privacymodulesapi")
-    implementation project(':orbotservice')
+    // implementation project(":privacymodulesapi")
+    //implementation project(':orbotservice')
 
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    implementation project(':orbotservice') // TODO: use aar .
+    implementation 'org.torproject:tor-android-binary:0.4.4.6'
+    implementation 'info.pluggabletransports.aptds:jsocksAndroid:1.0.4'
+    implementation 'com.jaredrummler:android-shell:1.0.0'
+    implementation 'com.offbynull.portmapper:portmapper:2.0.5'
+    implementation 'info.guardianproject:jtorctl:0.4'
+    implementation 'com.github.tladesignz:IPtProxy:0.5.2'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'foundation.e'
+            //You can either define these here or get them from project conf elsewhere
+            artifactId 'privacymodule.tor'
+            version '0.0.1'
+            artifact "$buildDir/outputs/aar/privacymoduletor-debug.aar" //aar artifact you want to publish
+//            artifact "$buildDir/outputs/aar/sdk-release.aar" //aar artifact you want to publish
+
+            //generate pom nodes for dependencies
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.each { dependency ->
+                    if (dependency.name != 'unspecified') {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', dependency.group)
+                        dependencyNode.appendNode('artifactId', dependency.name)
+                        dependencyNode.appendNode('version', dependency.version)
+                    }
+                }
+            }
+        }
+    }
 }

@@ -216,7 +216,7 @@ class IpScramblerModule(private val context: Context) {
     }
 
     private fun getTorifiedApps(): Set<String> {
-        return Prefs.getSharedPrefs(context).getString(VpnPrefs.PREFS_KEY_TORIFIED)
+        return Prefs.getSharedPrefs(context).getString(VpnPrefs.PREFS_KEY_TORIFIED, "")
             ?.split("|")?.toSet() ?: emptySet()
     }
 }
