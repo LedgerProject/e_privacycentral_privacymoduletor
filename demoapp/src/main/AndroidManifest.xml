@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="foundation.e.tordemoapp">
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="TorDemoApp"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.TorDemoApp"
+        >
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="TorDemoApp"
+            android:theme="@style/Theme.TorDemoApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
