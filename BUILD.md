@@ -1,7 +1,8 @@
-This document explains how to properly build an Android package of Orbot from
+This document explains how to properly build the module AAR for orbostservice and privacymoduletor from
 source.
 
-Orbot includes, in the external directory, git repo submodules of:
+PrivacyModuleTor includes, in the external directory, git repo submodules of:
+- OrbotService: the module used by Orbot to run Tor
 - JTorControl: The Tor Control Library for Java
 - BadVPN
 - JSocks
@@ -36,11 +37,10 @@ Windows:
 		ren libs\x86\pdnsd pdnsd.so
 		ren libs\x86_64\pdnsd pdnsd.so
 
+Now you can build the AAR modules :
 
-Now build the Android app using Android Studio/gradle
+        ./gradlew :orbotservice:assembleRelease :privacymoduletor:assembleRelease
+        ./gradlew --console=verbose publishToMavenLocal
 
-This will produce an unsigned Orbot package APK.
-
-To produce a usable package, you'll need to sign the .apk. The basics on signing can be found on the Android developer site:
-
-http://developer.android.com/guide/publishing/app-signing.html
+This will put compiled AAR and pom file exposing their dependencies in the local maven
+repository (usually in ~/.m2/repository).

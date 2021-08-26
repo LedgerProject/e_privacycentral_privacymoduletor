@@ -1,12 +1,9 @@
-# Privacy Modules Google PlayStore specific implementations
+# Privacy Module Tor
 
-This Android Module (aar) implements PrivacyModules functionalities respecting all the constraints to be available on the Google PlayStore.
+This Module (aar) implements IpScramblerModule functionnalities with Tor, reliying on a fork of OrbotService.
 
 
 
 # Functionalities
 
-## v0.0.2
-
-* Change runtime permission automatically using Accessibility.
-* Set mock location API using accessibility.
+## v0.0.1

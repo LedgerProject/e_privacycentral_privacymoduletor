@@ -1,22 +1,42 @@
+/*
+ * Copyright (C) 2021 E FOUNDATION
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package foundation.e.privacymodules.ipscrambler
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import foundation.e.privacymodules.ipscramblermodule.IIpScramblerModule
+import foundation.e.privacymodules.ipscramblermodule.IIpScramblerModule.Listener
+import foundation.e.privacymodules.ipscramblermodule.IIpScramblerModule.Status
 import org.torproject.android.service.OrbotService
 import org.torproject.android.service.TorServiceConstants
-
 import org.torproject.android.service.util.Prefs
-import org.torproject.android.service.vpn.TorifiedApp
 import org.torproject.android.service.vpn.VpnPrefs
-import java.lang.Exception
-import java.lang.StringBuilder
 
-class IpScramblerModule(private val context: Context) {
+
+class IpScramblerModule(private val context: Context): IIpScramblerModule {
     companion object {
         const val TAG = "IpScramblerModule"
     }
@@ -24,12 +44,6 @@ class IpScramblerModule(private val context: Context) {
     private var currentStatus: Status? = null
     private val listeners = mutableSetOf<Listener>()
 
-    /**
-     * The state and log info from [OrbotService] are sent to the UI here in
-     * the form of a local broadcast. Regular broadcasts can be sent by any app,
-     * so local ones are used here so other apps cannot interfere with Orbot's
-     * operation.
-     */
     private val localBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action ?: return
@@ -40,8 +54,6 @@ class IpScramblerModule(private val context: Context) {
         }
     }
 
-    // this is what takes messages or values from the callback threads or other non-mainUI threads
-    //and passes them back into the main UI thread for display to the user
     private val messageHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             val action = msg.obj as? String ?: return
@@ -78,13 +90,7 @@ class IpScramblerModule(private val context: Context) {
 
     init {
         Prefs.setContext(context)
-/* receive the internal status broadcasts, which are separate from the public
-         * status broadcasts to prevent other apps from sending fake/wrong status
-         * info to this app */
 
-        /* receive the internal status broadcasts, which are separate from the public
-         * status broadcasts to prevent other apps from sending fake/wrong status
-         * info to this app */
         val lbm = LocalBroadcastManager.getInstance(context)
         lbm.registerReceiver(
             localBroadcastReceiver,
@@ -103,87 +109,10 @@ class IpScramblerModule(private val context: Context) {
             IntentFilter(TorServiceConstants.LOCAL_ACTION_PORTS)
         )
 
-        //mPrefs = Prefs.getSharedPrefs(getApplicationContext())
-
-        /**
-         * Resets previous DNS Port to the default
-         */
-        /**
-         * Resets previous DNS Port to the default
-         */
         Prefs.getSharedPrefs(context).edit()
             .putInt(VpnPrefs.PREFS_DNS_PORT, TorServiceConstants.TOR_DNS_PORT_DEFAULT)
             .apply()
     }
-
-
-    fun onCleared() {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(localBroadcastReceiver)
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // interface
-
-    fun prepareAndroidVpn(): Intent? {
-        return VpnService.prepare(context)
-    }
-
-    fun start() {
-        Prefs.putUseVpn(true)
-        Prefs.putStartOnBoot(true)
-
-        // TODO: should check for prepare VPN ?
-        sendIntentToService(TorServiceConstants.ACTION_START)
-        sendIntentToService(TorServiceConstants.ACTION_START_VPN)
-    }
-
-    fun stop() {
-        Prefs.putUseVpn(false)
-        Prefs.putStartOnBoot(false)
-
-        sendIntentToService(TorServiceConstants.ACTION_STOP_VPN)
-        context.stopService(Intent(context, OrbotService::class.java))
-    }
-
-    fun requestStatus() {
-        sendIntentToService(TorServiceConstants.ACTION_STATUS)
-    }
-
-    // TODO: fix interface
-    var appList: Set<String>
-        get() = getTorifiedApps()
-        set(value) = saveTorifiedApps(value)
-
-    var httpProxyPort: Int = -1
-        private set
-
-    var socksProxyPort: Int = -1
-        private set
-
-
-    fun addListener(listener: Listener) {
-        listeners.add(listener)
-    }
-    fun removeListener(listener: Listener) {
-        listeners.remove(listener)
-    }
-    fun clearListeners() {
-        listeners.clear()
-    }
-
-
-    interface Listener {
-        fun onStatusChanged(newStatus: Status)
-        fun log(message: String)
-        fun onTrafficUpdate(upload: Long, download: Long, read: Long, write: Long)
-    }
-
-    enum class Status {
-        OFF, ON, STARTING, STOPPING, START_DISABLED
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private fun updateStatus(status: Status) {
         if (status != currentStatus) {
@@ -219,6 +148,55 @@ class IpScramblerModule(private val context: Context) {
         return Prefs.getSharedPrefs(context).getString(VpnPrefs.PREFS_KEY_TORIFIED, "")
             ?.split("|")?.toSet() ?: emptySet()
     }
+
+    override fun prepareAndroidVpn(): Intent? {
+        return VpnService.prepare(context)
+    }
+
+    override fun start() {
+        Prefs.putUseVpn(true)
+        Prefs.putStartOnBoot(true)
+
+        // TODO: should check for prepare VPN ?
+        sendIntentToService(TorServiceConstants.ACTION_START)
+        sendIntentToService(TorServiceConstants.ACTION_START_VPN)
+    }
+
+    override fun stop() {
+        Prefs.putUseVpn(false)
+        Prefs.putStartOnBoot(false)
+
+        sendIntentToService(TorServiceConstants.ACTION_STOP_VPN)
+        context.stopService(Intent(context, OrbotService::class.java))
+    }
+
+    override fun requestStatus() {
+        sendIntentToService(TorServiceConstants.ACTION_STATUS)
+    }
+
+    // TODO: fix interface
+    override var appList: Set<String>
+        get() = getTorifiedApps()
+        set(value) = saveTorifiedApps(value)
+
+    override var httpProxyPort: Int = -1
+        private set
+
+    override var socksProxyPort: Int = -1
+        private set
+
+
+    override fun addListener(listener: Listener) {
+        listeners.add(listener)
+    }
+    override fun removeListener(listener: Listener) {
+        listeners.remove(listener)
+    }
+    override fun clearListeners() {
+        listeners.clear()
+    }
+
+    override fun onCleared() {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(localBroadcastReceiver)
+    }
 }
-
-

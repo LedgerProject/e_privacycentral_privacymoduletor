@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2021 E FOUNDATION
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
@@ -33,26 +50,16 @@ android {
 
 dependencies {
     // implementation project(":privacymodulesapi")
-    //implementation project(':orbotservice')
 
-
-    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation project(':orbotservice') // TODO: use aar .
-    implementation 'org.torproject:tor-android-binary:0.4.4.6'
-    implementation 'info.pluggabletransports.aptds:jsocksAndroid:1.0.4'
-    implementation 'com.jaredrummler:android-shell:1.0.0'
-    implementation 'com.offbynull.portmapper:portmapper:2.0.5'
-    implementation 'info.guardianproject:jtorctl:0.4'
-    implementation 'com.github.tladesignz:IPtProxy:0.5.2'
+    implementation 'foundation.e:orbotservice:16.4.1'
+    //implementation project(':orbotservice')
 }
+
 
 publishing {
     publications {
@@ -61,8 +68,8 @@ publishing {
             //You can either define these here or get them from project conf elsewhere
             artifactId 'privacymodule.tor'
             version '0.0.1'
-            artifact "$buildDir/outputs/aar/privacymoduletor-debug.aar" //aar artifact you want to publish
-//            artifact "$buildDir/outputs/aar/sdk-release.aar" //aar artifact you want to publish
+            artifact "$buildDir/outputs/aar/privacymoduletor-release.aar" //aar artifact you want to publish
+
 
             //generate pom nodes for dependencies
             pom.withXml {

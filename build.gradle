@@ -1,4 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'maven-publish'
+
 buildscript {
     ext.kotlin_version = "1.4.10"
     repositories {
@@ -11,6 +13,33 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+}
+
+configure(project(':orbotservice')) {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId 'foundation.e'
+                //You can either define these here or get them from project conf elsewhere
+                artifactId 'orbotservice'
+                version '16.4.1'
+                artifact "$buildDir/outputs/aar/orbotservice-release.aar" //aar artifact you want to publish
+
+                //generate pom nodes for dependencies
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.implementation.allDependencies.each { dependency ->
+                        if (dependency.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', dependency.group)
+                            dependencyNode.appendNode('artifactId', dependency.name)
+                            dependencyNode.appendNode('version', dependency.version)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
