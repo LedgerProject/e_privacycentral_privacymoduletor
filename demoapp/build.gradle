@@ -53,7 +53,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
 
-    implementation 'foundation.e:privacymodule.tor:0.0.1'
-//    implementation project(':privacymoduletor')
+    //implementation 'foundation.e:privacymodule.tor:0.0.1'
+    implementation project(':privacymoduletor')
 //    implementation project(':orbotservice')
 }

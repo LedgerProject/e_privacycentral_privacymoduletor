@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
     private var mTxtOrbotLog: TextView? = null
     private var mBtnStart: Button? = null
     private var mBtnStop: Button? = null
+    private var mBtnRequestStatus: Button? = null
     private lateinit var ipScramblerModule: IpScramblerModule
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +61,10 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
 
         mBtnStop?.setOnClickListener {
             ipScramblerModule.stop()
+        }
+
+        mBtnRequestStatus?.setOnClickListener {
+            ipScramblerModule.requestStatus()
         }
     }
 

@@ -34,11 +34,24 @@ import org.torproject.android.service.OrbotService
 import org.torproject.android.service.TorServiceConstants
 import org.torproject.android.service.util.Prefs
 import org.torproject.android.service.vpn.VpnPrefs
+import android.service.notification.StatusBarNotification
+
+import android.content.Context.NOTIFICATION_SERVICE
+
+import androidx.core.content.ContextCompat.getSystemService
+
+import android.app.NotificationManager
+
+
+
 
 
 class IpScramblerModule(private val context: Context): IIpScramblerModule {
     companion object {
         const val TAG = "IpScramblerModule"
+
+        // Copy of the package private OrbotService.NOTIFY_ID value.
+        const val ORBOT_SERVICE_NOTIFY_ID_COPY = 1
     }
 
     private var currentStatus: Status? = null
@@ -60,7 +73,16 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
             val data = msg.data
             try {
                 data.getString(TorServiceConstants.EXTRA_STATUS)?.let {
-                    updateStatus(Status.valueOf(it))
+                    val newStatus = Status.valueOf(it)
+                    if (currentStatus == Status.STARTING && newStatus == Status.ON) {
+                        // Wait for bandwidth action to ensure true start.
+                        if (action == TorServiceConstants.LOCAL_ACTION_BANDWIDTH) {
+                            updateStatus(newStatus, force = true)
+                        }
+                    } else {
+                        updateStatus(newStatus,
+                            force = action == TorServiceConstants.ACTION_STATUS)
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Can't parse Orbot service status.")
@@ -114,8 +136,8 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
             .apply()
     }
 
-    private fun updateStatus(status: Status) {
-        if (status != currentStatus) {
+    private fun updateStatus(status: Status, force: Boolean = false) {
+        if (force || status != currentStatus) {
             currentStatus = status
             listeners.forEach {
                 it.onStatusChanged(status)
@@ -171,7 +193,13 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
     }
 
     override fun requestStatus() {
-        sendIntentToService(TorServiceConstants.ACTION_STATUS)
+        // Check if the service is working, by looking at the presence of the notification
+        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
+        if (notificationManager?.activeNotifications?.find { it.id == ORBOT_SERVICE_NOTIFY_ID_COPY } == null) {
+            updateStatus(Status.OFF, force = true)
+        } else {
+            sendIntentToService(TorServiceConstants.ACTION_STATUS)
+        }
     }
 
     // TODO: fix interface

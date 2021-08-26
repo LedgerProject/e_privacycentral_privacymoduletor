@@ -26,8 +26,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 1
-        versionName "0.0.1"
+        versionCode 2
+        versionName "0.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -67,7 +67,7 @@ publishing {
             groupId 'foundation.e'
             //You can either define these here or get them from project conf elsewhere
             artifactId 'privacymodule.tor'
-            version '0.0.1'
+            version android.defaultConfig.versionName
             artifact "$buildDir/outputs/aar/privacymoduletor-release.aar" //aar artifact you want to publish
 
 
