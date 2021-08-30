@@ -250,6 +250,9 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
         get() = getExitCountryCode()
         set(value) = setExitCountryCode(value)
 
+    override fun getAvailablesLocations(): Set<String> = EXIT_COUNTRY_CODES
+
+
     override var httpProxyPort: Int = -1
         private set
 

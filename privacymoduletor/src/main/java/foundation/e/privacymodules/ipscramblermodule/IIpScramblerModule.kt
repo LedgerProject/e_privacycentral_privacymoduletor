@@ -18,6 +18,7 @@
 package foundation.e.privacymodules.ipscramblermodule
 
 import android.content.Intent
+import foundation.e.privacymodules.ipscrambler.IpScramblerModule
 
 interface IIpScramblerModule {
     fun prepareAndroidVpn(): Intent?
@@ -31,6 +32,8 @@ interface IIpScramblerModule {
     var appList: Set<String>
 
     var exitCountry: String
+    fun getAvailablesLocations(): Set<String>
+
 
     val httpProxyPort: Int
     val socksProxyPort: Int
