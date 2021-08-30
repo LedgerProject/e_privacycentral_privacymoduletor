@@ -41,15 +41,19 @@ import android.content.Context.NOTIFICATION_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 
 import android.app.NotificationManager
-
-
-
+import android.os.Bundle
+import java.security.InvalidParameterException
+import java.util.*
 
 
 class IpScramblerModule(private val context: Context): IIpScramblerModule {
     companion object {
         const val TAG = "IpScramblerModule"
 
+        private val EXIT_COUNTRY_CODES = setOf("DE", "AT", "SE", "CH", "IS", "CA", "US", "ES", "FR", "BG", "PL", "AU", "BR", "CZ", "DK", "FI", "GB", "HU", "NL", "JP", "RO", "RU", "SG", "SK")
+
+        // Key where exit country is stored by orbot service.
+        private const val PREFS_KEY_EXIT_NODES = "pref_exit_nodes"
         // Copy of the package private OrbotService.NOTIFY_ID value.
         const val ORBOT_SERVICE_NOTIFY_ID_COPY = 1
     }
@@ -159,9 +163,10 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
         listeners.forEach { it.onTrafficUpdate(upload, download, read, write) }
     }
 
-    private fun sendIntentToService(action: String) {
+    private fun sendIntentToService(action: String, extra: Bundle? = null) {
         val intent = Intent(context, OrbotService::class.java)
         intent.action = action
+        extra?.let { intent.putExtras(it) }
         context.startService(intent)
     }
 
@@ -185,6 +190,27 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
         } else {
             list.toSet()
         }
+    }
+
+    private fun setExitCountryCode(countryCode: String) {
+        val countryParam = if (countryCode.isEmpty()) ""
+        else if (countryCode in EXIT_COUNTRY_CODES) "{$countryCode}"
+        else throw InvalidParameterException("Only these countries are available: ${EXIT_COUNTRY_CODES.joinToString { ", " } }")
+
+        if (isServiceRunning()) {
+            val extra = Bundle()
+            extra.putString("exit", countryParam)
+            sendIntentToService(TorServiceConstants.CMD_SET_EXIT, extra)
+        } else {
+            Prefs.getSharedPrefs(context)
+                .edit().putString(PREFS_KEY_EXIT_NODES, countryParam)
+                .commit()
+        }
+    }
+
+    private fun getExitCountryCode(): String {
+        val raw = Prefs.getExitNodes()
+        return if (raw.isEmpty()) raw else raw.slice(1..3)
     }
 
     override fun prepareAndroidVpn(): Intent? {
@@ -216,10 +242,13 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
         }
     }
 
-    // TODO: fix interface
     override var appList: Set<String>
         get() = getTorifiedApps()
         set(value) = saveTorifiedApps(value)
+
+    override var exitCountry: String
+        get() = getExitCountryCode()
+        set(value) = setExitCountryCode(value)
 
     override var httpProxyPort: Int = -1
         private set

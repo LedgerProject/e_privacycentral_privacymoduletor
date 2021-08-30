@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
     private var mSelectAll: RadioButton? = null
     private var mSelectApp1: RadioButton? = null
 
+    private var mToggleCountry: Switch? = null
+
+
     private lateinit var ipScramblerModule: IpScramblerModule
 
 
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
         mBtnStop = findViewById(R.id.button_stop)
         mSelectAll = findViewById(R.id.select_all)
         mSelectApp1 = findViewById(R.id.select_app1)
+        mToggleCountry = findViewById(R.id.toggle_exit_node)
 
         mBtnStart?.setOnClickListener { v: View? ->
             ipScramblerModule.prepareAndroidVpn()?.let { startActivityForResult(it, 3)}
@@ -87,6 +91,11 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
             updateAppSelection()
         }
 
+        mToggleCountry?.setOnCheckedChangeListener { _, isChecked ->
+            ipScramblerModule.exitCountry = if (isChecked) "US" else ""
+        }
+
+        mToggleCountry?.isChecked = ipScramblerModule.exitCountry == "US"
         updateAppSelection()
     }
 

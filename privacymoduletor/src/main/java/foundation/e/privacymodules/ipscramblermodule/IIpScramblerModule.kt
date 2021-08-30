@@ -28,8 +28,9 @@ interface IIpScramblerModule {
 
     fun requestStatus()
 
-    // TODO: fix interface
     var appList: Set<String>
+
+    var exitCountry: String
 
     val httpProxyPort: Int
     val socksProxyPort: Int
