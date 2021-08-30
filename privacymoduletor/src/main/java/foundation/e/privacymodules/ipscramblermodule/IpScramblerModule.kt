@@ -145,6 +145,12 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
         }
     }
 
+    private fun isServiceRunning(): Boolean {
+        // Check if the service is working, by looking at the presence of the notification
+        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
+        return notificationManager?.activeNotifications?.find { it.id == ORBOT_SERVICE_NOTIFY_ID_COPY } != null
+    }
+
     private fun newLog(message: String) {
         listeners.forEach { it.log(message) }
     }
@@ -164,11 +170,21 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
         Prefs.getSharedPrefs(context).edit().putString(
             VpnPrefs.PREFS_KEY_TORIFIED, packageNames.joinToString("|")
         ).commit()
+
+        if (isServiceRunning()) {
+            sendIntentToService(TorServiceConstants.ACTION_STOP_VPN)
+            sendIntentToService(TorServiceConstants.ACTION_START_VPN)
+        }
     }
 
     private fun getTorifiedApps(): Set<String> {
-        return Prefs.getSharedPrefs(context).getString(VpnPrefs.PREFS_KEY_TORIFIED, "")
-            ?.split("|")?.toSet() ?: emptySet()
+        val list = Prefs.getSharedPrefs(context).getString(VpnPrefs.PREFS_KEY_TORIFIED, "")
+            ?.split("|")
+        return if (list == null ||list == listOf("")) {
+            emptySet()
+        } else {
+            list.toSet()
+        }
     }
 
     override fun prepareAndroidVpn(): Intent? {
@@ -193,12 +209,10 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
     }
 
     override fun requestStatus() {
-        // Check if the service is working, by looking at the presence of the notification
-        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
-        if (notificationManager?.activeNotifications?.find { it.id == ORBOT_SERVICE_NOTIFY_ID_COPY } == null) {
-            updateStatus(Status.OFF, force = true)
-        } else {
+        if (isServiceRunning()) {
             sendIntentToService(TorServiceConstants.ACTION_STATUS)
+        } else {
+            updateStatus(Status.OFF, force = true)
         }
     }
 

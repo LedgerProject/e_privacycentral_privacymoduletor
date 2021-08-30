@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:padding="24dp"
     android:orientation="vertical"
     tools:context=".MainActivity">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,24 +64,40 @@
         android:text="Status?"
         android:layout_marginBottom="24dp"
         />
+
+    <RadioGroup
+        android:id="@+id/selective_scrambling"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="24dp"
+        >
+
+        <RadioButton
+            android:id="@+id/select_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="All"
+            />
+        <RadioButton
+            android:id="@+id/select_app1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Firefox"
+            />
+
+    </RadioGroup>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="OrbotLog: "
         />
-
-    <androidx.core.widget.NestedScrollView
+    <TextView
+        android:id="@+id/orbot_log"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        >
-        <TextView
-            android:id="@+id/orbot_log"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            />
-    </androidx.core.widget.NestedScrollView>
-
-
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        />
 </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -22,12 +22,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.RadioButton
+import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import foundation.e.privacymodules.ipscrambler.IpScramblerModule
 import foundation.e.privacymodules.ipscramblermodule.IIpScramblerModule
 
+const val APP_1 = "org.mozilla.firefox"
+
 class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
+
 
     private var lblStatus: TextView? = null
     private var lblTraffic: TextView? = null
@@ -35,7 +40,11 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
     private var mBtnStart: Button? = null
     private var mBtnStop: Button? = null
     private var mBtnRequestStatus: Button? = null
+    private var mSelectAll: RadioButton? = null
+    private var mSelectApp1: RadioButton? = null
+
     private lateinit var ipScramblerModule: IpScramblerModule
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +54,13 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
 
         ipScramblerModule.addListener(this)
 
-
         lblStatus = findViewById(R.id.label_status)
         lblTraffic = findViewById(R.id.label_traffic)
         mTxtOrbotLog = findViewById(R.id.orbot_log)
         mBtnStart = findViewById(R.id.button_start)
         mBtnStop = findViewById(R.id.button_stop)
+        mSelectAll = findViewById(R.id.select_all)
+        mSelectApp1 = findViewById(R.id.select_app1)
 
         mBtnStart?.setOnClickListener { v: View? ->
             ipScramblerModule.prepareAndroidVpn()?.let { startActivityForResult(it, 3)}
@@ -66,6 +76,18 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
         mBtnRequestStatus?.setOnClickListener {
             ipScramblerModule.requestStatus()
         }
+
+        mSelectAll?.setOnClickListener {
+            ipScramblerModule.appList = emptySet()
+            updateAppSelection()
+        }
+
+        mSelectApp1?.setOnClickListener {
+            ipScramblerModule.appList = setOf(APP_1)
+            updateAppSelection()
+        }
+
+        updateAppSelection()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -82,7 +104,6 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
         ipScramblerModule.requestStatus()
     }
 
-
     private var logHistory = ""
     override fun log(message: String) {
         logHistory = message + "\n" + logHistory
@@ -95,6 +116,11 @@ class MainActivity : AppCompatActivity(), IIpScramblerModule.Listener {
 
     override fun onTrafficUpdate(upload: Long, download: Long, read: Long, write: Long) {
         lblTraffic?.text = "↑ ${write/1000}kB (${upload/1000}kB/s)  ↓ ${read/1000}kB (${download/1000}kB/s)"
+    }
+
+    private fun updateAppSelection() {
+        mSelectAll?.isChecked = ipScramblerModule.appList.isEmpty()
+        mSelectApp1?.isChecked = ipScramblerModule.appList.contains(APP_1)
     }
 }
 
