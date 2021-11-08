@@ -41,6 +41,7 @@ import android.content.Context.NOTIFICATION_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 
 import android.app.NotificationManager
+import android.net.VpnManager
 import android.os.Bundle
 import java.security.InvalidParameterException
 import java.util.*
@@ -210,7 +211,7 @@ class IpScramblerModule(private val context: Context): IIpScramblerModule {
 
     private fun getExitCountryCode(): String {
         val raw = Prefs.getExitNodes()
-        return if (raw.isEmpty()) raw else raw.slice(1..3)
+        return if (raw.isEmpty()) raw else raw.slice(1..2   )
     }
 
     override fun prepareAndroidVpn(): Intent? {
